@@ -1,5 +1,6 @@
 import asyncio
 import base64
+import re
 import shlex
 
 from nonebot.adapters import Bot, Event
@@ -61,12 +62,19 @@ async def _bili_check(state: T_State, event: Event, bot: Bot, msg: UniMsg) -> bo
         _msg_str = str(_msg.data)
         if "b23" in _msg_str:
             bililink = await api.tools_b23_extract(_msg_str)
-        # av bv cv 格式和动态的链接
-        for seg in ("av", "bv", "cv", "dynamic", "opus", "t.bilibili.com"):
-            if seg in _msg_str.lower():
-                bililink = _msg_str
-                break
-
+        # # av bv cv 格式和动态的链接
+        # for seg in ("av", "bv", "cv", "dynamic", "opus", "t.bilibili.com"):
+        #     if seg in _msg_str.lower():
+        #         bililink = _msg_str
+        #         break
+        else:
+            result = re.search(
+                r"[ac]v\d+|bv[a-zA-Z0-9]+|t\.bilibili\.com/\d+|bilibili\.com/opus/\d+",
+                _msg_str,
+                re.IGNORECASE
+            )
+            if result is not None:
+                bililink = result.group(0)
     if not bililink:
         return False
 
