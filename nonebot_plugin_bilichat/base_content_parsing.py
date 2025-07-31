@@ -131,7 +131,5 @@ async def content_info(state: T_State):
         msgs.append(Image(raw=base64.b64decode(content.img)))
         msgs.append(Text(content.b23))
     except RequestError as e:
-        logger.error(e)
-        msgs.append(Text(f"{e.type}: {e.message}"))
-
-    receipt = await msgs.send(fallback=ConfigCTX.get().nonebot.fallback, reply_to=True)
+        raise e
+    await msgs.send(fallback=ConfigCTX.get().nonebot.fallback, reply_to=True)
